@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import { HttpStatus } from '../../enums';
 import { ApiError } from '../../utils/ApiError';
-import { OptimizedYouTubeService, YouTubeVideo } from './optimized-youtube.service';
+import { YouTubeService, YouTubeVideo } from './youtube.service';
 
 export interface LLMResourceResponse {
   topic: string;
@@ -42,7 +42,7 @@ export interface LLMResourceResponse {
 export class OpenAIService {
   private openai: OpenAI;
   private apiKey: string;
-  private optimizedYouTubeService: OptimizedYouTubeService;
+  private youtubeService: YouTubeService;
 
   constructor() {
     this.apiKey = process.env.OPENAI_API_KEY || '';
@@ -55,7 +55,7 @@ export class OpenAIService {
     this.openai = new OpenAI({
       apiKey: this.apiKey,
     });
-    this.optimizedYouTubeService = new OptimizedYouTubeService();
+    this.youtubeService = new YouTubeService();
   }
 
   /**
@@ -63,9 +63,9 @@ export class OpenAIService {
    */
   async generateLearningResources(topic: string): Promise<LLMResourceResponse> {
     try {
-      // Get real YouTube videos using ultra-fast service
-      console.log(`⚡ Using ultra-fast service to fetch YouTube videos for topic: ${topic}`);
-      const youtubeVideos = await this.optimizedYouTubeService.searchEducationalVideos(topic, 3);
+      // Get YouTube videos for the topic
+      console.log(`Fetching YouTube videos for topic: ${topic}`);
+      const youtubeVideos = await this.youtubeService.searchEducationalVideos(topic, 3);
       
       const prompt = this.createResourceGenerationPrompt(topic, youtubeVideos);
       

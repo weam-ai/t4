@@ -11,11 +11,11 @@ export interface YouTubeVideo {
   thumbnail: string;
 }
 
-export class OptimizedYouTubeService {
+export class YouTubeService {
   private youtube: Innertube | null = null;
 
   constructor() {
-    // No LLM initialization needed - using pre-defined queries for speed
+    // Initialize YouTube service for educational video search
   }
 
   private async getYouTubeClient(): Promise<Innertube> {
@@ -31,52 +31,52 @@ export class OptimizedYouTubeService {
   }
 
   /**
-   * Ultra-fast search for educational videos using optimized approach
+   * Search for educational videos on YouTube
    */
   async searchEducationalVideos(topic: string, maxResults: number = 3): Promise<YouTubeVideo[]> {
     try {
-      console.log(`⚡ Ultra-fast search for educational videos: ${topic}`);
+      console.log(`Searching for educational videos: ${topic}`);
       
-      // Use only 1 optimized search query for maximum speed
+      // Use optimized search query for relevant results
       const searchQuery = `${topic} tutorial`;
-      console.log(`🚀 Using single optimized query: "${searchQuery}"`);
+      console.log(`Using search query: "${searchQuery}"`);
       
-      // Perform ultra-fast YouTube search
-      const videos = await this.performUltraFastYouTubeSearch(topic, searchQuery, maxResults);
+      // Perform YouTube search
+      const videos = await this.performYouTubeSearch(topic, searchQuery, maxResults);
       
       return videos.slice(0, maxResults);
 
     } catch (error) {
-      console.error('Ultra-fast YouTube search error:', error);
-      return this.getFastFallbackVideos(topic);
+      console.error('YouTube search error:', error);
+      return this.getFallbackVideos(topic);
     }
   }
 
 
   /**
-   * Perform ultra-fast YouTube search using youtubei.js
+   * Perform YouTube search using youtubei.js
    */
-  private async performUltraFastYouTubeSearch(topic: string, searchQuery: string, maxResults: number): Promise<YouTubeVideo[]> {
+  private async performYouTubeSearch(topic: string, searchQuery: string, maxResults: number): Promise<YouTubeVideo[]> {
     try {
-      console.log(`⚡ Ultra-fast YouTube search for: ${topic}`);
+      console.log(`YouTube search for: ${topic}`);
       
       const youtube = await this.getYouTubeClient();
       const allVideos: YouTubeVideo[] = [];
 
       try {
-        console.log(`🚀 Single search: "${searchQuery}"`);
+        console.log(`Searching: "${searchQuery}"`);
         
         const search = await youtube.search(searchQuery, {
           type: 'video',
           sort_by: 'relevance',
         });
 
-        // Get only the top videos for maximum speed
+        // Get top videos for the topic
         const videos = search.videos.slice(0, maxResults);
 
         for (const video of videos) {
           if (video && 'id' in video && video.id) {
-            const videoInfo = await this.getUltraFastVideoDetails(video.id);
+            const videoInfo = await this.getVideoDetails(video.id);
             if (videoInfo) {
               allVideos.push(videoInfo);
             }
@@ -86,19 +86,18 @@ export class OptimizedYouTubeService {
         console.error(`Error searching for "${searchQuery}":`, queryError);
       }
 
-      // Return videos without duplicate removal for speed
       return allVideos;
 
     } catch (error) {
-      console.error('Ultra-fast YouTube search error:', error);
-      return this.getFastFallbackVideos(topic);
+      console.error('YouTube search error:', error);
+      return this.getFallbackVideos(topic);
     }
   }
 
   /**
-   * Get video details using ultra-fast direct YouTube API with enhanced error handling
+   * Get video details using YouTube API with enhanced error handling
    */
-  private async getUltraFastVideoDetails(videoId: string): Promise<YouTubeVideo | null> {
+  private async getVideoDetails(videoId: string): Promise<YouTubeVideo | null> {
     try {
       const youtube = await this.getYouTubeClient();
       
@@ -185,10 +184,9 @@ export class OptimizedYouTubeService {
   }
 
   /**
-   * Get ultra-fast fallback videos when search fails
+   * Get fallback videos when search fails
    */
-  private getFastFallbackVideos(topic: string): YouTubeVideo[] {
-    // Ultra-fast fallback with minimal processing
+  private getFallbackVideos(topic: string): YouTubeVideo[] {
     return [
       {
         title: `${topic} - Complete Tutorial`,
