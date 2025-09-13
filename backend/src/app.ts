@@ -14,7 +14,7 @@ app.use(requestIp.mw());
 
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5000, // Limit each IP to 500 requests per `window` (here, per 15 minutes)
+    max: 8888, // Limit each IP to 500 requests per `window` (here, per 15 minutes)
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req, res) => {
