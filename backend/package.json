@@ -20,13 +20,19 @@
   },
   "homepage": "https://github.com/sachinsudani/nodejs-boilerplate#readme",
   "dependencies": {
+    "@langchain/community": "^0.3.55",
+    "@langchain/core": "^0.3.75",
+    "axios": "^1.12.1",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "express-rate-limit": "^7.4.1",
+    "googleapis": "^159.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.4",
+    "openai": "^5.20.2",
     "request-ip": "^3.3.0",
+    "youtubei.js": "^15.1.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {

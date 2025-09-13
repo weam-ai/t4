@@ -1,0 +1,429 @@
+{
+  "info": {
+    "name": "LMS Learning Management System API",
+    "description": "API collection for Learning Management System with authentication, learning resources, and chat history endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Register a new user account"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/register",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "auth", "register"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"user\": {\n      \"_id\": \"507f1f77bcf86cd799439011\",\n      \"name\": \"John Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n      \"updatedAt\": \"2024-01-15T10:30:00.000Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  },\n  \"message\": \"User registered successfully\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Login with existing user credentials"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/auth/login",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"user\": {\n      \"_id\": \"507f1f77bcf86cd799439011\",\n      \"name\": \"John Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n      \"updatedAt\": \"2024-01-15T10:30:00.000Z\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  },\n  \"message\": \"Login successful\"\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Authentication endpoints for user registration and login"
+    },
+    {
+      "name": "Learning Resources",
+      "item": [
+        {
+          "name": "Create Learning Resource",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"topic\": \"React Hooks\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/resources",
+              "host": ["{{base_url}}"],
+              "path": ["api", "resources"]
+            },
+            "description": "Generate learning resources for a specific topic. Requires authentication."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"topic\": \"React Hooks\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/resources",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "resources"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"topic\": \"React Hooks\",\n    \"summary\": \"React Hooks revolutionized how we write React components by allowing us to use state and other React features in functional components. Introduced in React 16.8, hooks provide a more direct API to the React concepts you already know: props, state, context, refs, and lifecycle. They enable you to reuse stateful logic between components, making your code more modular and easier to test. Learning React Hooks is essential for modern React development as they represent the future of React component architecture.\",\n    \"resources\": {\n      \"documentation\": [\n        {\n          \"title\": \"Introducing Hooks - React\",\n          \"url\": \"https://reactjs.org/docs/hooks-intro.html\",\n          \"description\": \"Official React documentation introducing hooks concept and basic usage\",\n          \"source\": \"React Team\"\n        },\n        {\n          \"title\": \"Hooks API Reference\",\n          \"url\": \"https://reactjs.org/docs/hooks-reference.html\",\n          \"description\": \"Complete reference for all built-in React hooks\",\n          \"source\": \"React Team\"\n        },\n        {\n          \"title\": \"Rules of Hooks\",\n          \"url\": \"https://reactjs.org/docs/hooks-rules.html\",\n          \"description\": \"Essential rules for using hooks correctly\",\n          \"source\": \"React Team\"\n        }\n      ],\n      \"youtube\": [\n        {\n          \"title\": \"React Hooks Explained in 10 Minutes\",\n          \"url\": \"https://www.youtube.com/watch?v=TNhaISOUy6Q\",\n          \"description\": \"Quick but comprehensive introduction to React hooks\",\n          \"channel\": \"Web Dev Simplified\",\n          \"duration\": \"10:30\"\n        },\n        {\n          \"title\": \"React Hooks Crash Course\",\n          \"url\": \"https://www.youtube.com/watch?v=TNhaISOUy6Q\",\n          \"description\": \"Complete crash course covering all major hooks\",\n          \"channel\": \"Traversy Media\",\n          \"duration\": \"45:20\"\n        }\n      ],\n      \"googleLinks\": [\n        {\n          \"title\": \"React Hooks Best Practices\",\n          \"url\": \"https://www.google.com/search?q=react+hooks+best+practices+2024\",\n          \"description\": \"Search for current best practices and patterns\",\n          \"searchQuery\": \"react hooks best practices 2024\"\n        },\n        {\n          \"title\": \"Custom React Hooks Examples\",\n          \"url\": \"https://www.google.com/search?q=custom+react+hooks+examples\",\n          \"description\": \"Find examples of custom hooks for common use cases\",\n          \"searchQuery\": \"custom react hooks examples\"\n        }\n      ]\n    },\n    \"learningPath\": {\n      \"beginner\": [\n        \"Learn useState hook for component state\",\n        \"Understand useEffect for side effects\",\n        \"Practice with simple form components\"\n      ],\n      \"intermediate\": [\n        \"Master custom hooks creation\",\n        \"Learn useContext for global state\",\n        \"Implement useReducer for complex state\"\n      ],\n      \"advanced\": [\n        \"Optimize with useMemo and useCallback\",\n        \"Create reusable hook libraries\",\n        \"Implement advanced patterns and testing\"\n      ]\n    },\n    \"estimatedTime\": \"2-3 weeks\",\n    \"difficulty\": \"Intermediate\"\n  },\n  \"message\": \"Learning resources generated successfully\"\n}"
+            },
+            {
+              "name": "Validation Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"topic\": \"\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/resources",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "resources"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Topic is required\",\n  \"errors\": [\"Topic is required\"]\n}"
+            },
+            {
+              "name": "Unauthorized Error",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"topic\": \"React Hooks\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/resources",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "resources"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Unauthorized Request: No token provided\",\n  \"errors\": []\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Learning resource generation endpoints"
+    },
+    {
+      "name": "Chat History",
+      "item": [
+        {
+          "name": "Get Chat History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/chats?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "chats"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (optional, default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of items per page (optional, default: 10, max: 100)"
+                }
+              ]
+            },
+            "description": "Retrieve user's chat history with pagination. Requires authentication."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/chats?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "chats"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"chats\": [\n      {\n        \"_id\": \"507f1f77bcf86cd799439012\",\n        \"topic\": \"React Hooks\",\n        \"response\": {\n          \"topic\": \"React Hooks\",\n          \"summary\": \"React Hooks is a popular JavaScript library for building user interfaces...\",\n          \"resources\": {\n            \"documentation\": [\n              \"https://reactjs.org/tutorial/tutorial.html\",\n              \"https://react.dev/learn\"\n            ],\n            \"youtube\": [\n              \"https://www.youtube.com/watch?v=DLX62G4lc44\",\n              \"https://www.youtube.com/watch?v=Ke90Tje7VS0\"\n            ],\n            \"googleLinks\": [\n              \"https://www.google.com/search?q=react+hooks+tutorial\",\n              \"https://www.google.com/search?q=react+state+management\"\n            ]\n          }\n        },\n        \"createdAt\": \"2024-01-15T10:30:00.000Z\"\n      },\n      {\n        \"_id\": \"507f1f77bcf86cd799439013\",\n        \"topic\": \"Node.js\",\n        \"response\": {\n          \"topic\": \"Node.js\",\n          \"summary\": \"Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine...\",\n          \"resources\": {\n            \"documentation\": [\n              \"https://nodejs.org/en/learn/\",\n              \"https://expressjs.com/en/guide/routing.html\"\n            ],\n            \"youtube\": [\n              \"https://www.youtube.com/watch?v=TlB_eWDSMt4\",\n              \"https://www.youtube.com/watch?v=Oe421EPjeBE\"\n            ],\n            \"googleLinks\": [\n              \"https://www.google.com/search?q=nodejs+express+tutorial\",\n              \"https://www.google.com/search?q=nodejs+middleware\"\n            ]\n          }\n        },\n        \"createdAt\": \"2024-01-15T09:15:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"total\": 2,\n      \"totalPages\": 1\n    }\n  },\n  \"message\": \"Chat history retrieved successfully\",\n  \"fetchedResultCount\": 2\n}"
+            },
+            {
+              "name": "Empty Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/chats",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "chats"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"chats\": [],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"total\": 0,\n      \"totalPages\": 0\n    }\n  },\n  \"message\": \"Chat history retrieved successfully\",\n  \"fetchedResultCount\": 0\n}"
+            },
+            {
+              "name": "Unauthorized Error",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/chats",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "chats"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Unauthorized Request: No token provided\",\n  \"errors\": []\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Chat history retrieval endpoints"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-extract token from login response",
+          "if (pm.response && pm.response.json() && pm.response.json().data && pm.response.json().data.token) {",
+          "    pm.collectionVariables.set('auth_token', pm.response.json().data.token);",
+          "}"
+        ]
+      }
+    }
+  ]
+}
