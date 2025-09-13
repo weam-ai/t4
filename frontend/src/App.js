@@ -1,15 +1,30 @@
+// App.js
 import React from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import Dashboard from './components/Dashboard';
 import ChatPage from './components/ChatPage';
+import SettingsPage from './components/SettingsPage';
 import './index.css';
 
 const AppContent = () => {
   const { state } = useApp();
 
+  const renderCurrentPage = () => {
+    switch (state.currentPage) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'chat':
+        return <ChatPage />;
+      case 'settings':
+        return <SettingsPage />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
   return (
     <div className="min-h-screen">
-      {state.currentPage === 'dashboard' ? <Dashboard /> : <ChatPage />}
+      {renderCurrentPage()}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+// components/Dashboard.js
 import React from 'react';
 import { useApp } from '../context/AppContext';
 
@@ -6,6 +7,7 @@ const Dashboard = () => {
 
   const handleAddNew = () => {
     dispatch({ type: 'SET_PAGE', payload: 'chat' });
+    dispatch({ type: 'CLEAR_CURRENT_DOCUMENT' });
   };
 
   const handleViewDocument = (doc) => {
@@ -16,6 +18,10 @@ const Dashboard = () => {
     if (window.confirm('Delete this document?')) {
       dispatch({ type: 'DELETE_DOCUMENT', payload: docId });
     }
+  };
+
+  const goToSettings = () => {
+    dispatch({ type: 'SET_PAGE', payload: 'settings' });
   };
 
   const formatDate = (dateString) => {
@@ -32,18 +38,57 @@ const Dashboard = () => {
               <h1 className="text-3xl font-bold text-gray-900">Learning Dashboard</h1>
               <p className="text-gray-600 mt-1">Your AI-powered learning companion</p>
             </div>
-            <button
-              onClick={handleAddNew}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Create New Learning Content
-            </button>
+            <div className="flex items-center gap-4">
+              {/* Settings Button */}
+              <button
+                onClick={goToSettings}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                title="Settings"
+              >
+                <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+              
+              {/* Create New Button */}
+              <button
+                onClick={handleAddNew}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Create New Learning Content
+              </button>
+            </div>
           </div>
         </div>
       </header>
+
+      {/* API Key Status Banner */}
+      {!state.openaiApiKey && (
+        <div className="bg-yellow-50 border-b border-yellow-200">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span className="text-sm text-yellow-800">
+                  OpenAI API key not configured. Please add your API key to enable dynamic content generation.
+                </span>
+              </div>
+              <button
+                onClick={goToSettings}
+                className="text-sm text-yellow-800 hover:text-yellow-900 font-medium underline"
+              >
+                Configure API Key
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -56,12 +101,30 @@ const Dashboard = () => {
               </svg>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Welcome to Smart Learning</h2>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            <p className="text-gray-600 mb-4 max-w-md mx-auto">
               Start your learning journey by creating your first AI-generated learning document with curated video recommendations.
             </p>
+            {!state.openaiApiKey && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 max-w-md mx-auto">
+                <p className="text-sm text-blue-800 mb-2">
+                  <strong>To get started:</strong> Configure your OpenAI API key in settings to enable dynamic content generation.
+                </p>
+                <button
+                  onClick={goToSettings}
+                  className="text-sm text-blue-600 hover:text-blue-800 font-medium underline"
+                >
+                  Go to Settings →
+                </button>
+              </div>
+            )}
             <button
               onClick={handleAddNew}
-              className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center gap-2 font-medium"
+              className={`px-8 py-4 rounded-lg transition-colors inline-flex items-center gap-2 font-medium ${
+                state.openaiApiKey
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              disabled={!state.openaiApiKey}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
