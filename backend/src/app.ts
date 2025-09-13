@@ -5,7 +5,6 @@ import requestIp from "request-ip";
 import { errorHandler } from "./middlewares/error.middleware";
 import authRouter from "./routes/auth/auth.routes";
 import { ApiError } from "./utils/ApiError";
-import taskRouter from "./routes/task/task.routes";
 import resourceRouter from "./routes/learning-content/resource.routes";
 import chatRouter from "./routes/learning-content/chat.routes";
 
@@ -36,7 +35,6 @@ app.use(express.json({ limit: "16kb" }));
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
 app.use("/api/auth", authRouter);
-app.use("/api/task", taskRouter);
 app.use("/api/resources", resourceRouter);
 app.use("/api/chats", chatRouter);
 
