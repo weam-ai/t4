@@ -9,25 +9,16 @@ import { updateTaskSchema } from "./validators/update.task.validator";
 import { getTaskByUserIdSchema } from "./validators/get.task.validator";
 
 const updateTask: RequestHandler = asyncHandler(async (req, res, _next) => {
-  const payload = updateTaskSchema.parse(req.body);
-  const userId = getTaskByUserIdSchema.parse({ userId: "" });
-  const task = await Task.findByIdAndUpdate(
-    { _id: payload.taskId, user: userId },
-    {
-      title: payload.title,
-      description: payload.description,
-      status: payload.status,
-    },
-    { new: true }
-  );
+    const payload = updateTaskSchema.parse(req.body);
+    const userId = getTaskByUserIdSchema.parse({ userId: req.user._id.toString() });
+    const task = await Task.findByIdAndUpdate({ _id: payload.taskId, user: userId }, { title: payload.title, description: payload.description, status: payload.status }, { new: true });
 
-  if (!task) {
-    throw new ApiError(HttpStatus.NOT_FOUND, TaskMessage.TaskNotFound);
-  }
+    if (!task) {
+        throw new ApiError(HttpStatus.NOT_FOUND, TaskMessage.TaskNotFound);
+    }
 
-  res
-    .status(HttpStatus.OK)
-    .json(new ApiResponse(HttpStatus.OK, task, TaskMessage.TaskUpdateSuccess));
+    res.status(HttpStatus.OK).json(new ApiResponse(HttpStatus.OK, task, TaskMessage.TaskUpdateSuccess));
 });
 
 export { updateTask };
+

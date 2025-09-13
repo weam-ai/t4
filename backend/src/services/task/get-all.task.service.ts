@@ -7,15 +7,12 @@ import { TaskMessage } from "./content";
 import { getTaskByUserIdSchema } from "./validators/get.task.validator";
 
 const getTasks: RequestHandler = asyncHandler(async (req, res) => {
-  const payload = getTaskByUserIdSchema.parse({ userId: "" });
+    const payload = getTaskByUserIdSchema.parse({ userId: req.user._id.toString() });
 
-  const tasks = await Task.find({ user: payload.userId });
+    const tasks = await Task.find({ user: payload.userId });
 
-  res
-    .status(HttpStatus.OK)
-    .json(
-      new ApiResponse(HttpStatus.OK, tasks, TaskMessage.TaskRetrieveSuccess)
-    );
+    res.status(HttpStatus.OK).json(new ApiResponse(HttpStatus.OK, tasks, TaskMessage.TaskRetrieveSuccess));
 });
 
 export { getTasks };
+
