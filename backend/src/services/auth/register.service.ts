@@ -29,7 +29,7 @@ const register: RequestHandler = asyncHandler(async (req, res, _next) => {
         updatedAt: newUser.updatedAt,
     };
 
-    res.status(HttpStatus.CREATED).json(new ApiResponse(HttpStatus.CREATED, userWithoutPassword, AuthMessage.RegisterSuccess));
+    res.status(HttpStatus.OK).json(new ApiResponse(HttpStatus.CREATED, userWithoutPassword, AuthMessage.RegisterSuccess));
 });
 
 export { register };

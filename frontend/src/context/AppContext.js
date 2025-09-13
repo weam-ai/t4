@@ -1,4 +1,3 @@
-// context/AppContext.js (Updated with Enhanced Debug Integration)
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import OpenAIService from '../services/openaiService';
 import { authService } from '../services/authService';
@@ -21,8 +20,9 @@ const initialState = {
   currentTopic: '',
   currentDocument: '',
   currentVideos: [],
+  currentResources: null, // Added for full resources data
   
-  // OpenAI and Services
+  // OpenAI and Services (Kept for backward compatibility)
   openaiApiKey: '',
   geminiApiKey: '',
   openaiService: null,
@@ -99,38 +99,39 @@ const appReducer = (state, action) => {
         openaiService: newService || state.openaiService
       };
     
-    case 'SAVE_DOCUMENT':
-      const newDoc = {
-        id: Date.now().toString(),
-        topic: action.payload.topic,
-        document: action.payload.document,
-        videos: action.payload.videos,
-        userId: state.user?.id || state.user?.email,
-        createdAt: new Date().toISOString(),
-        debugData: action.payload.debugData // Save debug data with document
-      };
-      const updatedDocs = [newDoc, ...state.savedDocuments];
-      
-      const storageKey = state.user ? `learningDocs_${state.user.id || state.user.email}` : 'learningDocs';
-      localStorage.setItem(storageKey, JSON.stringify(updatedDocs));
-      
+    case 'SET_SAVED_DOCUMENTS':
+      // Don't save to localStorage anymore - use API data only
       return { 
         ...state, 
-        savedDocuments: updatedDocs,
-        currentTopic: action.payload.topic,
-        currentDocument: action.payload.document,
-        currentVideos: action.payload.videos,
-        lastGenerationDebugData: action.payload.debugData
+        savedDocuments: action.payload 
+      };
+    
+    case 'CLEAR_SAVED_DOCUMENTS':
+      return { 
+        ...state, 
+        savedDocuments: [] 
       };
     
     case 'LOAD_DOCUMENTS':
+      // Deprecated - kept for backward compatibility but won't be used
       return { ...state, savedDocuments: action.payload };
     
     case 'DELETE_DOCUMENT':
+      // Remove from local state only - API deletion handled in components
       const filteredDocs = state.savedDocuments.filter(doc => doc.id !== action.payload);
-      const deleteStorageKey = state.user ? `learningDocs_${state.user.id || state.user.email}` : 'learningDocs';
-      localStorage.setItem(deleteStorageKey, JSON.stringify(filteredDocs));
       return { ...state, savedDocuments: filteredDocs };
+    
+    case 'SAVE_DOCUMENT':
+      // Modified: Save to API instead of localStorage (handled in ChatPage)
+      // This action now only updates current state
+      return { 
+        ...state, 
+        currentTopic: action.payload.topic,
+        currentDocument: action.payload.document,
+        currentVideos: action.payload.videos,
+        currentResources: action.payload.resources,
+        lastGenerationDebugData: action.payload.debugData
+      };
     
     case 'VIEW_DOCUMENT':
       return {
@@ -138,7 +139,18 @@ const appReducer = (state, action) => {
         currentTopic: action.payload.topic,
         currentDocument: action.payload.document,
         currentVideos: action.payload.videos,
+        currentResources: action.payload.resources,
         currentPage: 'chat',
+        lastGenerationDebugData: action.payload.debugData || null
+      };
+    
+    case 'SET_CURRENT_DOCUMENT':
+      return {
+        ...state,
+        currentTopic: action.payload.topic,
+        currentDocument: action.payload.document,
+        currentVideos: action.payload.videos,
+        currentResources: action.payload.resources,
         lastGenerationDebugData: action.payload.debugData || null
       };
     
@@ -148,6 +160,7 @@ const appReducer = (state, action) => {
         currentTopic: '',
         currentDocument: '',
         currentVideos: [],
+        currentResources: null,
         lastGenerationDebugData: null
       };
     
@@ -179,22 +192,16 @@ export const AppProvider = ({ children }) => {
           dispatch({ type: 'SET_USER', payload: user });
           dispatch({ type: 'SET_PAGE', payload: 'dashboard' });
           
-          // Load user-specific documents
-          const userStorageKey = `learningDocs_${user.id || user.email}`;
-          const savedDocs = localStorage.getItem(userStorageKey);
-          if (savedDocs) {
-            try {
-              const documents = JSON.parse(savedDocs);
-              dispatch({ type: 'LOAD_DOCUMENTS', payload: documents });
-            } catch (error) {
-              console.error('Failed to load saved documents:', error);
-            }
-          }
+          // Clear any old localStorage documents and load from API
+          const oldUserStorageKey = `learningDocs_${user.id || user.email}`;
+          localStorage.removeItem(oldUserStorageKey);
+          localStorage.removeItem('learningDocs'); // Clear global docs
+          
         } else {
           dispatch({ type: 'SET_PAGE', payload: 'login' });
         }
 
-        // Initialize API keys and services
+        // Initialize API keys and services (kept for backward compatibility)
         const savedOpenAIKey = localStorage.getItem('openaiApiKey');
         const savedGeminiKey = localStorage.getItem('geminiApiKey');
         
@@ -217,6 +224,8 @@ export const AppProvider = ({ children }) => {
   }, []);
 
   const generateContent = async (topic) => {
+    // This method is now deprecated - use API call directly in components
+    // Kept for backward compatibility
     if (!state.openaiService) {
       throw new Error('OpenAI API key not configured. Please add your API key in settings.');
     }
@@ -255,13 +264,14 @@ export const AppProvider = ({ children }) => {
         })));
       }
 
-      // Save the generated content with debug data
+      // Update current state (API save handled in ChatPage)
       dispatch({
         type: 'SAVE_DOCUMENT',
         payload: {
           topic,
           document: results.document,
           videos: results.videos,
+          resources: results.resources, // Include full resources
           debugData: results._debugData
         }
       });
@@ -269,6 +279,7 @@ export const AppProvider = ({ children }) => {
       return {
         document: results.document,
         videos: results.videos,
+        resources: results.resources,
         debugData: results._debugData
       };
 
@@ -294,7 +305,7 @@ export const AppProvider = ({ children }) => {
     dispatch({ type: 'HIDE_DEBUG_CONSOLE' });
   };
 
-  // Method to update API keys
+  // Method to update API keys (kept for backward compatibility)
   const updateOpenAIKey = (key) => {
     dispatch({ type: 'SET_OPENAI_KEY', payload: key });
   };
@@ -303,26 +314,74 @@ export const AppProvider = ({ children }) => {
     dispatch({ type: 'SET_GEMINI_KEY', payload: key });
   };
 
-  // Method to get service status
+  // Method to get service status (kept for backward compatibility)
   const getServiceStatus = () => {
     return {
       openaiConfigured: !!state.openaiApiKey,
       geminiConfigured: !!state.geminiApiKey,
       serviceCapabilities: state.openaiService?.getCapabilities() || {},
-      debugConsoleAvailable: true
+      debugConsoleAvailable: true,
+      isAuthenticated: state.isAuthenticated
     };
+  };
+
+  // New method to fetch dashboard data (can be used by Dashboard component if needed)
+  const fetchDashboardData = async () => {
+    // This can be called from Dashboard component directly, but provided here for convenience
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('No authentication token found. Please log in.');
+    }
+
+    const apiUrl = process.env.REACT_APP_API_URL || '/api';
+    const response = await fetch(`${apiUrl}/chats?page=1&limit=10`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    if (result.success) {
+      const mappedDocs = result.data.chats.map(chat => ({
+        id: chat._id,
+        topic: chat.topic,
+        document: chat.response.summary,
+        videos: chat.response.resources.youtube,
+        resources: chat.response.resources,
+        createdAt: chat.createdAt,
+        estimatedTime: chat.response.estimatedTime,
+        difficulty: chat.response.difficulty,
+        learningPath: chat.response.learningPath
+      }));
+      
+      dispatch({
+        type: 'SET_SAVED_DOCUMENTS',
+        payload: mappedDocs
+      });
+      
+      return mappedDocs;
+    } else {
+      throw new Error(result.message || 'Failed to fetch chat history');
+    }
   };
 
   const value = {
     state,
     dispatch,
-    generateContent,
+    generateContent, // Kept for backward compatibility
     logout,
     showDebugConsole,
     hideDebugConsole,
     updateOpenAIKey,
     updateGeminiKey,
-    getServiceStatus
+    getServiceStatus,
+    fetchDashboardData // New utility method
   };
 
   return (

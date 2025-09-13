@@ -87,11 +87,11 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center p-4">
+<div className="min-h-screen bg-gradient-to-br from-[#397870]/10 via-white to-[#397870]/5 flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+      <div className="w-16 h-16 bg-[#397870] rounded-xl flex items-center justify-center mx-auto mb-4">
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
@@ -109,8 +109,13 @@ const RegisterPage = () => {
           >
             {({ isSubmitting, errors, touched, values }) => {
               const passwordStrength = getPasswordStrength(values.password);
-              const strengthColors = ['bg-gray-200', 'bg-red-400', 'bg-yellow-400', 'bg-blue-400', 'bg-green-400'];
-              const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  const strengthColors = [
+            'bg-gray-200',
+            'bg-red-400',
+            'bg-yellow-400',
+            'bg-[#397870]',
+            'bg-[#2f605b]'
+          ];              const strengthLabels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
 
               return (
                 <Form className="space-y-6">
@@ -136,9 +141,9 @@ const RegisterPage = () => {
                       id="name"
                       name="name"
                       placeholder="Enter your full name"
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors ${
-                        errors.name && touched.name ? 'border-red-300' : 'border-gray-300'
-                      }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397870] focus:border-transparent transition-colors ${
+                  errors.name && touched.name ? 'border-red-300' : 'border-gray-300'
+                }`}
                       disabled={isSubmitting}
                     />
                     <ErrorMessage name="name" component="div" className="mt-1 text-sm text-red-600" />
@@ -154,9 +159,9 @@ const RegisterPage = () => {
                       id="email"
                       name="email"
                       placeholder="Enter your email"
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors ${
-                        errors.email && touched.email ? 'border-red-300' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#397870] focus:border-transparent transition-colors ${
+                  errors.email && touched.email ? 'border-red-300' : 'border-gray-300'
+                }`}
                       disabled={isSubmitting}
                     />
                     <ErrorMessage name="email" component="div" className="mt-1 text-sm text-red-600" />
@@ -287,7 +292,7 @@ const RegisterPage = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2"
+                className="w-full bg-[#397870] text-white py-3 rounded-lg hover:bg-[#2f605b] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
                       <>
@@ -314,8 +319,7 @@ const RegisterPage = () => {
               Already have an account?{' '}
               <button
                 onClick={goToLogin}
-                className="text-green-600 hover:text-green-800 font-medium"
-              >
+className="text-[#397870] hover:text-[#2f605b] font-medium"              >
                 Sign in here
               </button>
             </p>
