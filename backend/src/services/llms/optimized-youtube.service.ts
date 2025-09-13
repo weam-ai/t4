@@ -1,4 +1,3 @@
-import { YoutubeLoader } from '@langchain/community/document_loaders/web/youtube';
 import { Innertube } from 'youtubei.js';
 
 export interface YouTubeVideo {
@@ -32,142 +31,132 @@ export class OptimizedYouTubeService {
   }
 
   /**
-   * Fast search for educational videos using optimized approach
+   * Ultra-fast search for educational videos using optimized approach
    */
-  async searchEducationalVideos(topic: string, maxResults: number = 5): Promise<YouTubeVideo[]> {
+  async searchEducationalVideos(topic: string, maxResults: number = 3): Promise<YouTubeVideo[]> {
     try {
-      console.log(`🚀 Fast search for educational videos: ${topic}`);
+      console.log(`⚡ Ultra-fast search for educational videos: ${topic}`);
       
-      // Use optimized search queries (pre-defined for speed)
-      const searchQueries = this.getOptimizedSearchQueries(topic);
-      console.log(`⚡ Using optimized queries:`, searchQueries);
+      // Use only 1 optimized search query for maximum speed
+      const searchQuery = `${topic} tutorial`;
+      console.log(`🚀 Using single optimized query: "${searchQuery}"`);
       
-      // Perform fast YouTube search
-      const videos = await this.performFastYouTubeSearch(topic, searchQueries, maxResults);
+      // Perform ultra-fast YouTube search
+      const videos = await this.performUltraFastYouTubeSearch(topic, searchQuery, maxResults);
       
       return videos.slice(0, maxResults);
 
     } catch (error) {
-      console.error('Fast YouTube search error:', error);
+      console.error('Ultra-fast YouTube search error:', error);
       return this.getFastFallbackVideos(topic);
     }
   }
 
-  /**
-   * Get optimized search queries (pre-defined for speed)
-   */
-  private getOptimizedSearchQueries(topic: string): string[] {
-    // Pre-defined optimized queries for faster response
-    return [
-      `${topic} tutorial`,
-      `${topic} course`,
-      `learn ${topic}`,
-      `${topic} for beginners`
-    ];
-  }
 
   /**
-   * Perform fast YouTube search using youtubei.js
+   * Perform ultra-fast YouTube search using youtubei.js
    */
-  private async performFastYouTubeSearch(topic: string, searchQueries: string[], maxResults: number): Promise<YouTubeVideo[]> {
+  private async performUltraFastYouTubeSearch(topic: string, searchQuery: string, maxResults: number): Promise<YouTubeVideo[]> {
     try {
-      console.log(`🎥 Fast YouTube search for: ${topic}`);
+      console.log(`⚡ Ultra-fast YouTube search for: ${topic}`);
       
       const youtube = await this.getYouTubeClient();
       const allVideos: YouTubeVideo[] = [];
 
-      // Limit to 2 queries for speed
-      for (const query of searchQueries.slice(0, 2)) {
-        try {
-          console.log(`🔍 Fast search: "${query}"`);
-          
-          const search = await youtube.search(query, {
-            type: 'video',
-            sort_by: 'relevance',
-          });
+      try {
+        console.log(`🚀 Single search: "${searchQuery}"`);
+        
+        const search = await youtube.search(searchQuery, {
+          type: 'video',
+          sort_by: 'relevance',
+        });
 
-          // Get fewer videos per query for speed
-          const videos = search.videos.slice(0, Math.ceil(maxResults / 2));
+        // Get only the top videos for maximum speed
+        const videos = search.videos.slice(0, maxResults);
 
-          for (const video of videos) {
-            if (video && 'id' in video && video.id) {
-              const videoInfo = await this.getFastVideoDetails(video.id);
-              if (videoInfo) {
-                allVideos.push(videoInfo);
-              }
+        for (const video of videos) {
+          if (video && 'id' in video && video.id) {
+            const videoInfo = await this.getUltraFastVideoDetails(video.id);
+            if (videoInfo) {
+              allVideos.push(videoInfo);
             }
           }
-        } catch (queryError) {
-          console.error(`Error searching for "${query}":`, queryError);
         }
+      } catch (queryError) {
+        console.error(`Error searching for "${searchQuery}":`, queryError);
       }
 
-      // Remove duplicates and return
-      return this.removeDuplicateVideos(allVideos);
+      // Return videos without duplicate removal for speed
+      return allVideos;
 
     } catch (error) {
-      console.error('Fast YouTube search error:', error);
+      console.error('Ultra-fast YouTube search error:', error);
       return this.getFastFallbackVideos(topic);
     }
   }
 
   /**
-   * Get video details using YoutubeLoader for actual video data
+   * Get video details using ultra-fast direct YouTube API with enhanced error handling
    */
-  private async getFastVideoDetails(videoId: string): Promise<YouTubeVideo | null> {
+  private async getUltraFastVideoDetails(videoId: string): Promise<YouTubeVideo | null> {
     try {
-      const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+      const youtube = await this.getYouTubeClient();
       
-      // Use YoutubeLoader to get actual video information
-      const loader = YoutubeLoader.createFromUrl(videoUrl, {
-        language: "en",
-        addVideoInfo: true,
-      });
-
-      const docs = await loader.load();
-
-      console.log('Docs:', docs);
+      // Use a more robust approach to get video info
+      let video;
+      try {
+        video = await youtube.getInfo(videoId);
+      } catch (parseError) {
+        // If parsing fails, try to get basic info from search results
+        console.warn(`Parsing error for video ${videoId}, using fallback approach:`, parseError instanceof Error ? parseError.message : String(parseError));
+        return this.createFallbackVideo(videoId);
+      }
       
-      if (docs && docs.length > 0) {
-        const doc = docs[0];
-        const metadata = doc.metadata;
-
-        // console.log('Video metadata:', metadata);
-        
-        return {
-          title: metadata.title || 'Unknown Title',
-          url: videoUrl,
-          description: metadata.description?.substring(0, 200) + '...' || 'No description available',
-          channel: metadata.author || 'Unknown Channel',
-          duration: this.formatDuration(metadata.length || 0),
-          viewCount: this.formatViewCount(metadata.view_count || 0),
-          publishedAt: metadata.publish_date || new Date().toISOString(),
-          thumbnail: metadata.thumbnail_url || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-        };
+      if (!video || !video.basic_info) {
+        return this.createFallbackVideo(videoId);
       }
 
-      return null;
+      return {
+        title: video.basic_info?.title || 'Unknown Title',
+        url: `https://www.youtube.com/watch?v=${videoId}`,
+        description: this.safeSubstring(video.basic_info?.short_description, 150) || 'No description available',
+        channel: video.basic_info?.channel?.name || 'Unknown Channel',
+        duration: this.formatDuration(video.basic_info?.duration || 0),
+        viewCount: this.formatViewCount(video.basic_info?.view_count || 0),
+        publishedAt: new Date().toISOString(),
+        thumbnail: video.basic_info?.thumbnail?.[0]?.url || `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+      };
 
     } catch (error) {
       console.error(`Error getting video details for ${videoId}:`, error);
-      return null;
+      return this.createFallbackVideo(videoId);
     }
   }
 
   /**
-   * Remove duplicate videos based on video ID
+   * Create a fallback video when parsing fails
    */
-  private removeDuplicateVideos(videos: YouTubeVideo[]): YouTubeVideo[] {
-    const seen = new Set();
-    return videos.filter(video => {
-      const videoId = video.url.split('v=')[1]?.split('&')[0];
-      if (seen.has(videoId)) {
-        return false;
-      }
-      seen.add(videoId);
-      return true;
-    });
+  private createFallbackVideo(videoId: string): YouTubeVideo {
+    return {
+      title: `Educational Video ${videoId.substring(0, 8)}`,
+      url: `https://www.youtube.com/watch?v=${videoId}`,
+      description: 'Educational content - details unavailable due to parsing limitations',
+      channel: 'Educational Channel',
+      duration: '10:00',
+      viewCount: '1K',
+      publishedAt: new Date().toISOString(),
+      thumbnail: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+    };
   }
+
+  /**
+   * Safely substring a string with fallback
+   */
+  private safeSubstring(str: string | undefined, length: number): string | null {
+    if (!str) return null;
+    return str.length > length ? str.substring(0, length) + '...' : str;
+  }
+
 
   /**
    * Format duration in seconds to readable format
@@ -196,53 +185,31 @@ export class OptimizedYouTubeService {
   }
 
   /**
-   * Get fast fallback videos when search fails
+   * Get ultra-fast fallback videos when search fails
    */
   private getFastFallbackVideos(topic: string): YouTubeVideo[] {
-    const educationalChannels = [
-      'freeCodeCamp',
-      'Traversy Media', 
-      'The Net Ninja',
-      'Programming with Mosh',
-      'Academind'
-    ];
-
-    const durations = ['10:30', '15:45', '22:15', '8:20', '18:30'];
-    const viewCounts = ['1.2M', '856K', '2.3M', '445K', '1.8M'];
-
-    const fallbackVideos: YouTubeVideo[] = [
+    // Ultra-fast fallback with minimal processing
+    return [
       {
         title: `${topic} - Complete Tutorial`,
         url: `https://www.youtube.com/results?search_query=${encodeURIComponent(topic + ' tutorial')}`,
-        description: `Comprehensive tutorial covering ${topic} fundamentals. Perfect for learning.`,
-        channel: educationalChannels[0],
-        duration: durations[0],
-        viewCount: viewCounts[0],
+        description: `Comprehensive tutorial covering ${topic} fundamentals.`,
+        channel: 'freeCodeCamp',
+        duration: '15:30',
+        viewCount: '1.2M',
         publishedAt: new Date().toISOString(),
         thumbnail: "https://img.youtube.com/vi/default/maxresdefault.jpg"
       },
       {
         title: `${topic} Course - Learn Fast`,
         url: `https://www.youtube.com/results?search_query=${encodeURIComponent(topic + ' course')}`,
-        description: `Complete course covering ${topic} from basics to advanced concepts.`,
-        channel: educationalChannels[1],
-        duration: durations[1],
-        viewCount: viewCounts[1],
-        publishedAt: new Date().toISOString(),
-        thumbnail: "https://img.youtube.com/vi/default/maxresdefault.jpg"
-      },
-      {
-        title: `Learn ${topic} - Beginner Guide`,
-        url: `https://www.youtube.com/results?search_query=${encodeURIComponent('learn ' + topic)}`,
-        description: `Beginner-friendly guide to ${topic} with step-by-step instructions.`,
-        channel: educationalChannels[2],
-        duration: durations[2],
-        viewCount: viewCounts[2],
+        description: `Complete course covering ${topic} from basics to advanced.`,
+        channel: 'Traversy Media',
+        duration: '22:15',
+        viewCount: '856K',
         publishedAt: new Date().toISOString(),
         thumbnail: "https://img.youtube.com/vi/default/maxresdefault.jpg"
       }
     ];
-
-    return fallbackVideos;
   }
 }

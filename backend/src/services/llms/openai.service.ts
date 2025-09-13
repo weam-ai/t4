@@ -63,9 +63,9 @@ export class OpenAIService {
    */
   async generateLearningResources(topic: string): Promise<LLMResourceResponse> {
     try {
-      // Get real YouTube videos using optimized service
-      console.log(`🚀 Using optimized service to fetch YouTube videos for topic: ${topic}`);
-      const youtubeVideos = await this.optimizedYouTubeService.searchEducationalVideos(topic, 5);
+      // Get real YouTube videos using ultra-fast service
+      console.log(`⚡ Using ultra-fast service to fetch YouTube videos for topic: ${topic}`);
+      const youtubeVideos = await this.optimizedYouTubeService.searchEducationalVideos(topic, 3);
       
       const prompt = this.createResourceGenerationPrompt(topic, youtubeVideos);
       
@@ -89,7 +89,7 @@ IMPORTANT: You must respond with ONLY valid JSON in the exact format specified. 
             content: prompt
           }
         ],
-        max_tokens: 1500, // Reduced tokens for faster response
+        max_tokens: 1000, // Further reduced tokens for ultra-fast response
         temperature: 0.3 // Lower temperature for faster, more consistent responses
       });
 
@@ -182,68 +182,38 @@ IMPORTANT: You must respond with ONLY valid JSON in the exact format specified. 
    * Create a comprehensive prompt for resource generation
    */
   private createResourceGenerationPrompt(topic: string, youtubeVideos: YouTubeVideo[]): string {
-    const youtubeInfo = youtubeVideos.length > 0 
-      ? `\n\nNOTE: Real YouTube videos have been found for this topic:\n${youtubeVideos.map(v => `- ${v.title} by ${v.channel} (${v.duration})`).join('\n')}\nThese will be automatically included in the response.`
-      : '';
+    return `Create comprehensive learning resources for: "${topic}"
 
-    return `Generate comprehensive learning resources for the topic: "${topic}"${youtubeInfo}
+Generate a detailed learning roadmap with actionable steps and valuable resources.
 
-CRITICAL: You must respond with ONLY valid JSON. No explanations, no markdown, no code blocks. Just pure JSON.
-
-Required JSON structure:
+JSON format:
 {
   "topic": "${topic}",
-  "summary": "A comprehensive 2-3 paragraph summary explaining what ${topic} is, why it's important, and what learners will gain from studying it.",
+  "summary": "Comprehensive 2-3 sentence overview explaining what ${topic} is, why it's important, and key benefits. Include practical applications and career relevance.",
   "resources": {
-    "documentation": [
-      {
-        "title": "Resource Title",
-        "url": "https://example.com",
-        "description": "Brief description of what this resource covers",
-        "source": "Organization/Website name"
-      }
-    ],
-    "youtube": [
-      {
-        "title": "Video Title",
-        "url": "https://youtube.com/watch?v=...",
-        "description": "What this video teaches",
-        "channel": "Channel Name",
-        "duration": "X:XX"
-      }
-    ],
-    "googleLinks": [
-      {
-        "title": "Search Result Title",
-        "url": "https://google.com/search?q=...",
-        "description": "What this search will help find",
-        "searchQuery": "specific search terms"
-      }
-    ]
+    "documentation": [{"title": "Specific Title", "url": "https://example.com", "description": "Detailed description of what this resource covers and why it's valuable", "source": "Official/Community Source"}],
+    "youtube": [{"title": "Video Title", "url": "https://youtube.com/watch?v=...", "description": "What this video teaches and target audience", "channel": "Channel Name", "duration": "X:XX"}],
+    "googleLinks": [{"title": "Search Query Title", "url": "https://google.com/search?q=...", "description": "What this search will help you find", "searchQuery": "specific search terms"}]
   },
   "learningPath": {
-    "beginner": ["Step 1", "Step 2", "Step 3"],
-    "intermediate": ["Step 1", "Step 2", "Step 3"],
-    "advanced": ["Step 1", "Step 2", "Step 3"]
+    "beginner": ["Specific actionable step 1 with expected outcome", "Specific actionable step 2 with expected outcome", "Specific actionable step 3 with expected outcome"],
+    "intermediate": ["Advanced concept to master with practical application", "Project-based learning step with deliverables", "Community engagement and networking step"],
+    "advanced": ["Expert-level mastery goal with measurable outcomes", "Contribution to open source or community", "Teaching and mentoring others"]
   },
-  "estimatedTime": "X weeks/months",
-  "difficulty": "Beginner|Intermediate|Advanced"
+  "estimatedTime": "Realistic timeframe (e.g., '2-3 weeks for basics, 2-3 months for proficiency')",
+  "difficulty": "Beginner"
 }
 
 Requirements:
-1. Provide 5-8 documentation links from official sources, well-known educational sites, or reputable organizations
-2. Focus on creating comprehensive documentation and Google search resources (YouTube videos will be provided automatically)
-3. Create 5-8 Google search queries that would help learners find additional resources
-4. Create a logical learning path with 3 steps each for beginner, intermediate, and advanced levels
-5. Estimate realistic learning time
-6. Assess the overall difficulty level
-7. Ensure all URLs are properly formatted and realistic
-8. Focus on current, up-to-date resources (2023-2024 when possible)
-9. Use only double quotes for strings
-10. Escape any quotes within string values
-11. Ensure proper JSON syntax with no trailing commas
+- Summary: 2-3 sentences explaining what, why, and practical value
+- Documentation: 3-5 official/authoritative sources with detailed descriptions
+- YouTube: Use provided video data, enhance descriptions with learning value
+- Google Links: 3-5 specific search queries with clear learning purposes
+- Learning Path: 3 actionable steps per level with specific outcomes
+- Estimated Time: Realistic timeframe based on complexity
+- Difficulty: Exactly one of "Beginner", "Intermediate", or "Advanced"
 
-RESPOND WITH ONLY THE JSON OBJECT - NO OTHER TEXT.`;
+RESPOND WITH ONLY JSON.`;
   }
 
   /**
@@ -270,10 +240,34 @@ RESPOND WITH ONLY THE JSON OBJECT - NO OTHER TEXT.`;
         advanced: ['Master advanced topics', 'Contribute to open source', 'Teach others']
       },
       estimatedTime: response.estimatedTime || '2-4 weeks',
-      difficulty: response.difficulty || 'Intermediate'
+      difficulty: this.validateDifficulty(response.difficulty)
     };
 
     return enhancedResponse;
+  }
+
+  /**
+   * Validate difficulty field to ensure it's a valid enum value
+   */
+  private validateDifficulty(difficulty: any): 'Beginner' | 'Intermediate' | 'Advanced' {
+    const validDifficulties = ['Beginner', 'Intermediate', 'Advanced'];
+    
+    if (!difficulty) {
+      return 'Beginner';
+    }
+    
+    // If difficulty contains multiple options (e.g., "Beginner|Intermediate|Advanced"), take the first one
+    if (typeof difficulty === 'string' && difficulty.includes('|')) {
+      difficulty = difficulty.split('|')[0].trim();
+    }
+    
+    // Ensure difficulty is a valid enum value
+    if (validDifficulties.includes(difficulty)) {
+      return difficulty as 'Beginner' | 'Intermediate' | 'Advanced';
+    }
+    
+    // Default to Beginner if invalid
+    return 'Beginner';
   }
 
   /**

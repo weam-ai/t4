@@ -410,6 +410,130 @@
         }
       ],
       "description": "Chat history retrieval endpoints"
+    },
+    {
+      "name": "Learning Resources List",
+      "item": [
+        {
+          "name": "Get Resources List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/resources/list?page=1&limit=10&topic=react",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "resources",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number (default: 1)"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Items per page (default: 10)"
+                },
+                {
+                  "key": "topic",
+                  "value": "react",
+                  "description": "Filter by topic (optional)"
+                }
+              ]
+            },
+            "description": "Get paginated list of learning resources for authenticated user"
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{auth_token}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/resources/list?page=1&limit=10",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "resources",
+                    "list"
+                  ],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"statusCode\": 200,\n  \"message\": \"Learning resources retrieved successfully\",\n  \"data\": {\n    \"resources\": [\n      {\n        \"id\": \"64f1a2b3c4d5e6f7g8h9i0j1\",\n        \"topic\": \"React Hooks\",\n        \"summary\": \"React Hooks are functions that let you use state and other React features in functional components...\",\n        \"difficulty\": \"Beginner\",\n        \"estimatedTime\": \"2-3 weeks for basics, 2-3 months for proficiency\",\n        \"learningPath\": {\n          \"beginner\": [\"Learn useState and useEffect\", \"Build simple components\", \"Practice with examples\"],\n          \"intermediate\": [\"Master custom hooks\", \"Build complex applications\", \"Optimize performance\"],\n          \"advanced\": [\"Create reusable hook libraries\", \"Contribute to open source\", \"Teach others\"]\n        },\n        \"createdAt\": \"2024-01-15T10:30:00.000Z\",\n        \"resourceCounts\": {\n          \"documentation\": 5,\n          \"youtube\": 3,\n          \"googleLinks\": 4\n        }\n      }\n    ],\n    \"pagination\": {\n      \"currentPage\": 1,\n      \"totalPages\": 3,\n      \"totalResources\": 25,\n      \"hasNextPage\": true,\n      \"hasPrevPage\": false\n    },\n    \"filters\": {\n      \"topic\": \"react\"\n    }\n  }\n}"
+            },
+            {
+              "name": "Unauthorized Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/resources/list",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "api",
+                    "resources",
+                    "list"
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Unauthorized Request: No token provided\",\n  \"errors\": []\n}"
+            }
+          ]
+        }
+      ],
+      "description": "Learning resources list endpoints"
     }
   ],
   "event": [
